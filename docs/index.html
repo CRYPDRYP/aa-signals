@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AA Signals — x402-Settled Trading Signals API</title>
+    <meta name="description" content="Real-time cryptocurrency trading signals powered by Jev AI. Every signal settles in USDC on Base mainnet via x402 protocol.">
+    <meta property="og:title" content="AA Signals — x402-Settled Trading Signals API">
+    <meta property="og:description" content="Real-time trading signals for autonomous agents. Pay-per-signal, Jev-verified, x402 settlement.">
+    <meta property="og:url" content="https://CRYPDRYP.github.io/aa-signals/">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: #1a202c;
+        }
+        .tagline {
+            font-size: 1.3em;
+            color: #4a5568;
+            margin-bottom: 30px;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        .btn {
+            padding: 12px 28px;
+            font-size: 1em;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+        .btn-secondary {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+        .btn-secondary:hover {
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-card h3 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .feature-card p {
+            color: #666;
+        }
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .pricing {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin: 40px 0;
+            text-align: center;
+        }
+        .price-tag {
+            font-size: 2.5em;
+            color: #2563eb;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        .links a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ AA Signals</h1>
+            <p class="tagline">x402-Settled Trading Signals for Autonomous Agents</p>
+            <p style="color: #666; margin-bottom: 30px;">Real-time crypto & Bittensor subnet signals, powered by <strong>Jev AI verification</strong>.</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/CRYPDRYP/aa-signals" class="btn btn-primary">View on GitHub</a>
+                <a href="#getting-started" class="btn btn-secondary">Get Started</a>
+            </div>
+        </header>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>🔄 Live API</h3>
+                <p><strong>Endpoint:</strong> signals.brobotapp.com</p>
+                <p><strong>Network:</strong> Base mainnet (eip155:8453)</p>
+                <p><strong>Symbols:</strong> BTC, ETH, TAO, QNT, ZEC, DOGE, DOG, VVV</p>
+            </div>
+            <div class="feature-card">
+                <h3>💰 Pay-Per-Signal</h3>
+                <p>Just <strong>$0.05 USDC</strong> per signal via x402 protocol.</p>
+                <p>Micropayments settled on-chain, automated settlement for agents.</p>
+            </div>
+            <div class="feature-card">
+                <h3>✅ Jev-Verified</h3>
+                <p>Every signal scored against live Kraken market data.</p>
+                <p>Confidence scores, regime indicators, and composite scores included.</p>
+            </div>
+        </div>
+
+        <div class="pricing">
+            <h2>Signal Response Format</h2>
+            <div class="code-block">
+{
+  "symbol": "BTC",
+  "action": "buy",           // buy | sell | hold
+  "confidence": 0.87,        // 0–1, Jev-scaled
+  "composite_score": 78,     // 0–100
+  "regime": "bullish",       // bullish | bearish | sideways
+  "timestamp": 1696505123,
+  "kraken_verified": true
+}
+            </div>
+        </div>
+
+        <section id="getting-started" style="background: white; padding: 40px; border-radius: 10px; margin: 40px 0;">
+            <h2>Getting Started in 3 Steps</h2>
+            <ol style="margin: 30px 0; padding-left: 30px;">
+                <li style="margin-bottom: 20px;"><strong>Set up x402 payments:</strong> Get a Base mainnet wallet + USDC (Coinbase Wallet recommended)</li>
+                <li style="margin-bottom: 20px;"><strong>Call the API:</strong> <code style="background: #f5f5f5; padding: 4px 8px; border-radius: 3px;">curl https://signals.brobotapp.com/v1/signal/BTC</code></li>
+                <li style="margin-bottom: 20px;"><strong>Pay & retry:</strong> Include x402 settlement proof in the X-Payment header</li>
+            </ol>
+            <p style="margin-top: 30px; padding-top: 30px; border-top: 1px solid #eee;">
+                <strong>Full documentation:</strong> See the <a href="https://github.com/CRYPDRYP/aa-signals#readme">README</a>, <a href="./API_REFERENCE.md">API Reference</a>, and <a href="./X402_GUIDE.md">x402 Integration Guide</a>.
+            </p>
+        </section>
+
+        <div class="links">
+            <a href="https://github.com/CRYPDRYP/aa-signals">📖 GitHub Repo</a>
+            <a href="https://github.com/CRYPDRYP/aa-signals/issues">🐛 Issues</a>
+            <a href="https://github.com/CRYPDRYP/aa-signals/discussions">💬 Discussions</a>
+            <a href="https://x402.dev">🔗 x402 Protocol</a>
+            <a href="https://brobotapp.com">🤖 Brobot (Jev integrator)</a>
+        </div>
+
+        <footer>
+            <p><strong>AA Signals</strong> • First x402-settled trading signals API • <a href="https://github.com/CRYPDRYP/aa-signals/blob/main/LICENSE">MIT License</a></p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Made with ⚡ for AI agents that trade smarter.</p>
+        </footer>
+    </div>
+</body>
+</html>
