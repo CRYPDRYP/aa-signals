@@ -1,0 +1,6 @@
+# GitHub Pages Configuration
+title: AA Signals
+description: First x402-settled trading signals API for autonomous agents
+theme: jekyll-theme-minimal
+show_downloads: false
+github_is_project_page: false
