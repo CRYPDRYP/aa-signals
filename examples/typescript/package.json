@@ -1,0 +1,19 @@
+{
+  "name": "aa-signals-buyer-ts",
+  "version": "1.0.0",
+  "description": "TypeScript example: fetch AA Signals with x402 payment",
+  "main": "buyer.ts",
+  "scripts": {
+    "start": "ts-node buyer.ts",
+    "build": "tsc",
+    "dev": "PRIVATE_KEY=YOUR_KEY ts-node buyer.ts"
+  },
+  "dependencies": {
+    "ethers": "^6.0.0",
+    "x402-ts": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0"
+  }
+}
