@@ -7,7 +7,13 @@ Real-time cryptocurrency and Bittensor-subnet trading signals, powered by **Jev*
 **Endpoint:** `https://signals.brobotapp.com`  
 **Network:** Base (eip155:8453)  
 **Price:** $0.05 USDC per signal  
-**Symbols:** BTC, ETH, TAO, QNT, ZEC, DOGE, DOG, VVV  
+**Symbols:** BTC, ETH, TAO, QNT, ZEC, DOGE, DOG, VVV
+
+### Status Badges
+[![Uptime Status](https://img.shields.io/badge/uptime-90.2%25-brightgreen?style=flat-square)](https://x402-list.com/services/aa-signals)
+[![Settlements Counted](https://img.shields.io/badge/settlements-13-blue?style=flat-square)](https://x402-list.com/services/aa-signals)
+[![Compliance Grade](https://img.shields.io/badge/compliance-A%2B-success?style=flat-square)](https://x402-list.com/services/aa-signals)
+[![Live on x402-list](https://img.shields.io/badge/x402--list-verified-lightblue?style=flat-square)](https://x402-list.com/services/aa-signals)  
 
 ## What You Get
 
