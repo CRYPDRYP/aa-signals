@@ -1,16 +1,18 @@
 /**
  * AA Signals x402 Buyer Example (TypeScript)
- * 
- * Demonstrates how to call the AA Signals API with x402 payment via ethers.js
- * and a standard x402 client library.
+ *
+ * Demonstrates how to call the AA Signals API with x402 payment using the
+ * REAL, published `x402-fetch` + `viem` packages.
+ *
+ * npm install x402-fetch viem
  */
 
-import { ethers } from 'ethers';
-import { X402Client } from 'x402-ts'; // Or use your own implementation
+import { createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { base } from 'viem/chains';
+import { wrapFetchWithPayment } from 'x402-fetch';
 
 const AA_SIGNALS_ENDPOINT = 'https://signals.brobotapp.com/v1/signal';
-const FACILITATOR_URL = 'https://facilitator.example.com'; // Your x402 facilitator
-const BASE_RPC = 'https://mainnet.base.org';
 
 interface Signal {
   symbol: string;
@@ -23,21 +25,21 @@ interface Signal {
 }
 
 async function main() {
-  // 1. Set up wallet and provider
-  const provider = new ethers.JsonRpcProvider(BASE_RPC);
-  const privateKey = process.env.PRIVATE_KEY || '';
-  const wallet = new ethers.Wallet(privateKey, provider);
+  // 1. Set up wallet (needs real USDC on Base mainnet — this is a live paid API)
+  const privateKey = process.env.PRIVATE_KEY as `0x${string}`;
+  if (!privateKey) {
+    throw new Error('Set PRIVATE_KEY env var to a Base-mainnet wallet funded with USDC');
+  }
+  const account = privateKeyToAccount(privateKey);
+  const wallet = createWalletClient({ account, chain: base, transport: http() });
 
   console.log(`📊 AA Signals Buyer (x402)`);
-  console.log(`Wallet: ${wallet.address}`);
+  console.log(`Wallet: ${account.address}`);
   console.log(`---`);
 
-  // 2. Initialize x402 client with facilitator
-  const x402Client = new X402Client({
-    facilitator: FACILITATOR_URL,
-    wallet: wallet,
-    debug: true, // See payment proofs in console
-  });
+  // 2. Wrap fetch with automatic x402 payment handling.
+  //    Default max spend per call is 0.1 USDC — AA Signals is $0.05, well under it.
+  const fetchWithPayment = wrapFetchWithPayment(fetch, wallet);
 
   // 3. Fetch signals for multiple symbols
   const symbols = ['BTC', 'ETH', 'TAO', 'DOGE'];
@@ -46,9 +48,10 @@ async function main() {
     try {
       console.log(`\n🔄 Fetching ${symbol}...`);
 
-      // First call will return HTTP 402 (payment required)
-      // x402Client handles settlement and retries automatically
-      const response = await x402Client.fetch(`${AA_SIGNALS_ENDPOINT}/${symbol}`);
+      // First call triggers an HTTP 402 internally; wrapFetchWithPayment signs
+      // and retries automatically. No facilitator URL needed client-side —
+      // AA Signals' server picks its own facilitator (Coinbase CDP).
+      const response = await fetchWithPayment(`${AA_SIGNALS_ENDPOINT}/${symbol}`);
 
       if (!response.ok) {
         console.error(`❌ ${symbol}: HTTP ${response.status}`);

@@ -85,7 +85,7 @@ The `X-Payment` header is a **base64-encoded** object containing:
 }
 ```
 
-Your client library (x402-ts, x402-py) handles encoding/decoding.
+Your client library handles encoding/decoding. Use the real published packages: `x402-fetch` (npm, pairs with `viem`) for TypeScript, or `x402` (PyPI, `pip install "x402[requests,evm]"`) for Python — see `examples/` in this repo. (Earlier revisions of this doc referenced `x402-ts`/`x402-py`, which don't exist on npm/PyPI; fixed 2026-10-07.)
 
 ---
 

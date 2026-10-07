@@ -1,36 +1,45 @@
 """
 AA Signals x402 Buyer Example (Python)
 
-Demonstrates how to call the AA Signals API with x402 payment via web3.py
-and a standard x402 client library.
+Demonstrates how to call the AA Signals API with x402 payment using the
+REAL, published `x402` PyPI package (Coinbase's official SDK) — not the
+fictional `x402_py` this file used to import (pip install x402-py 404s,
+confirmed against the live PyPI registry on 2026-10-07).
+
+Install:
+    pip install "x402[requests,evm]" eth-account
+
+Package surface (from https://pypi.org/project/x402/, verified 2026-10-07):
+    x402ClientSync            - sync payment client
+    x402.mechanisms.evm.exact.ExactEvmScheme - EVM "exact" payment scheme
+    x402.requests.x402_requests - wraps a requests.Session with auto-pay
 """
 
-import asyncio
 import os
-from web3 import Web3
-from x402_py import X402Client
+from eth_account import Account
+from x402 import x402ClientSync
+from x402.mechanisms.evm.exact import ExactEvmScheme
+from x402.requests import x402_requests
 
 AA_SIGNALS_ENDPOINT = 'https://signals.brobotapp.com/v1/signal'
-FACILITATOR_URL = 'https://facilitator.example.com'  # Your x402 facilitator
-BASE_RPC = 'https://mainnet.base.org'
 
-async def main():
-    # 1. Set up wallet and provider
-    w3 = Web3(Web3.HTTPProvider(BASE_RPC))
+
+def main():
+    # 1. Set up wallet (needs real USDC on Base mainnet — this is a live paid API)
     private_key = os.getenv('PRIVATE_KEY', '')
-    account = w3.eth.account.from_key(private_key)
+    if not private_key:
+        raise RuntimeError('Set PRIVATE_KEY env var to a Base-mainnet wallet funded with USDC')
+    account = Account.from_key(private_key)
 
-    print(f"📊 AA Signals Buyer (x402)")
+    print("📊 AA Signals Buyer (x402)")
     print(f"Wallet: {account.address}")
     print("---")
 
-    # 2. Initialize x402 client
-    x402_client = X402Client(
-        facilitator_url=FACILITATOR_URL,
-        account=account,
-        w3=w3,
-        debug=True,  # See payment proofs in console
-    )
+    # 2. Build an x402 client registered for EVM "exact" payments on any eip155
+    #    network, then wrap a requests.Session so 402s are paid automatically.
+    client = x402ClientSync()
+    client.register('eip155:*', ExactEvmScheme(signer=account))
+    session = x402_requests(x402_client=client)
 
     # 3. Fetch signals for multiple symbols
     symbols = ['BTC', 'ETH', 'TAO', 'DOGE']
@@ -39,9 +48,7 @@ async def main():
         try:
             print(f"\n🔄 Fetching {symbol}...")
 
-            # First call will return HTTP 402 (payment required)
-            # x402_client handles settlement and retries automatically
-            response = await x402_client.fetch(f'{AA_SIGNALS_ENDPOINT}/{symbol}')
+            response = session.get(f'{AA_SIGNALS_ENDPOINT}/{symbol}')
 
             if response.status_code != 200:
                 print(f"❌ {symbol}: HTTP {response.status_code}")
@@ -59,14 +66,15 @@ async def main():
 
             # 5. Example: Trade logic
             if signal['confidence'] > 0.75 and signal['action'] == 'buy':
-                print(f"   💰 Signal is strong — consider BUYING")
+                print("   💰 Signal is strong — consider BUYING")
             elif signal['confidence'] > 0.75 and signal['action'] == 'sell':
-                print(f"   📉 Signal is strong — consider SELLING")
+                print("   📉 Signal is strong — consider SELLING")
             elif signal['action'] == 'hold':
-                print(f"   ⏸️  HOLD — no action recommended")
+                print("   ⏸️  HOLD — no action recommended")
 
         except Exception as error:
             print(f"❌ Error fetching {symbol}: {error}")
 
+
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()

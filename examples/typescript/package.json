@@ -9,8 +9,8 @@
     "dev": "PRIVATE_KEY=YOUR_KEY ts-node buyer.ts"
   },
   "dependencies": {
-    "ethers": "^6.0.0",
-    "x402-ts": "*"
+    "viem": "^2.21.0",
+    "x402-fetch": "^0.3.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

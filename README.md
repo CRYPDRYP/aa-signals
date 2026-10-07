@@ -103,16 +103,20 @@ See full example: [`examples/typescript/buyer.ts`](examples/typescript/buyer.ts)
 ### Python (official `x402` package — real, installable)
 
 ```bash
-pip install "x402[requests]"
+pip install "x402[requests,evm]" eth-account
 ```
 
 ```python
 import os
 from eth_account import Account
-from x402.clients.requests import x402_requests
+from x402 import x402ClientSync
+from x402.mechanisms.evm.exact import ExactEvmScheme
+from x402.requests import x402_requests
 
 account = Account.from_key(os.environ['PRIVATE_KEY'])
-session = x402_requests(account)
+client = x402ClientSync()
+client.register('eip155:*', ExactEvmScheme(signer=account))
+session = x402_requests(x402_client=client)
 
 def get_signal(symbol):
     response = session.get(f'https://signals.brobotapp.com/v1/signal/{symbol}')
