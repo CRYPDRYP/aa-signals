@@ -28,7 +28,7 @@ Response:
 ```
 HTTP 402 Payment Required
 
-X-Payment-Address: 0x4DBfdd49b1C57b8fF79E7C98De85cA1f705EE3f2
+X-Payment-Address: 0x9B1b09caD288D90b4A0AcE7cA3f67462c88B6a6d  # current live value — verify against /.well-known/x402, don't trust a hardcoded doc
 X-Payment-Token: USDC
 X-Payment-Amount: 0.05
 X-Payment-Network: eip155:8453
@@ -110,8 +110,8 @@ from web3 import Web3
 
 w3 = Web3(Web3.HTTPProvider('https://mainnet.base.org'))
 
-# Your payment address
-payment_address = '0x4DBfdd49b1C57b8fF79E7C98De85cA1f705EE3f2'
+# Your payment address — verify live via /.well-known/x402, don't hardcode
+payment_address = '0x9B1b09caD288D90b4A0AcE7cA3f67462c88B6a6d'
 
 # Check balance
 balance = w3.eth.get_balance(payment_address)

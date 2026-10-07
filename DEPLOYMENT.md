@@ -2,8 +2,12 @@
 
 **API URL:** https://signals.brobotapp.com  
 **Network:** Base mainnet (eip155:8453)  
-**Status:** ⚠️ **BETA** (working on settlement tracking)  
-**Last Updated:** Oct 5, 2026, 05:00 UTC
+**Status:** ✅ **LIVE** — listed, online, payment-ready on x402-list.com  
+**Last Updated:** Oct 7, 2026, 21:00 UTC
+
+**Current payTo address (verified live from `/.well-known/x402` and the captured 402 payload on x402-list):** `0x9B1b09caD288D90b4A0AcE7cA3f67462c88B6a6d`
+
+> This address superseded an earlier `0x4DBfdd49b1C57b8fF79E7C98De85cA1f705EE3f2` referenced in older internal notes/docs. The address returned live in the 402 response is always the source of truth for payment — never a hardcoded doc value, since it can rotate. x402-list's `/api/v1/changes` feed tracks `payto_changed` events if this needs auditing later.
 
 ---
 
@@ -18,33 +22,28 @@
 - [x] Kraken market data feed connected
 - [x] Base mainnet RPC configured
 
-### ⚠️ Payment Gating
-- [ ] Signal endpoints returning HTTP 402 (currently returning 404)
-- [ ] X-Payment header validation
-- [ ] Settlement proof verification on-chain
-- [ ] Payment routing to 0x4DBfdd49b1C57b8fF79E7C98De85cA1f705EE3f2
-
-**ACTION:** Verify /v1/signal/* route configuration. May be /signals/* instead.
+### ✅ Payment Gating (resolved — was a stale reading)
+- [x] Signal endpoints returning HTTP 402 correctly (confirmed live Oct 7: `curl -i https://signals.brobotapp.com/v1/signal/BTC` → `HTTP/2 402`)
+- [x] Payment routing to the live payTo address `0x9B1b09caD288D90b4A0AcE7cA3f67462c88B6a6d` (settled via Coinbase facilitator per x402-list's `settled_via` field)
+- [ ] On-chain settlement proof spot-check for buyer identity (see Discovery & Indexing note below — unresolved)
 
 ### ✅ Blockchain Infrastructure
-- [x] Payment address deployed (0x4DBfdd49b1C57b8fF79E7C98De85cA1f705EE3f2)
-- [x] AgentIdentity registration (Oct 4, 2026)
-- [x] 46 confirmed transactions on Base (settlement proof)
-- [x] USDC balance tracked
+- [x] Payment address live: `0x9B1b09caD288D90b4A0AcE7cA3f67462c88B6a6d` (NOT the `0x4DBfdd49b1C57b8fF79E7C98De85cA1f705EE3f2` referenced in older docs — that value is stale/wrong, fixed throughout this repo Oct 7)
+- [x] USDC balance tracked: $1.04 on Basescan as of Oct 7, 2026 21:00 UTC
 
-### ⚠️ Discovery & Indexing
-- [x] Listed on x402-list.com (slug: aa-signals)
-- [x] Proper service metadata submitted
-- [x] Listed in Finance category, payment_ready: true
-- [ ] **BLOCKED:** Settlement tracking (0 counted, 46 real txn)
-- [ ] First settlement registered on x402-list
+### ✅ Discovery & Indexing — reconciled Oct 7, 2026
+- [x] Listed on x402-list.com (slug: `aa-signals`), status: **online**, payment_ready: true, compliance grade A (14/14 checks)
+- [x] Settlement tracking IS working — the "0 counted" reading in the Oct 5 version of this doc was stale/wrong, not a real blocker
 
-**CRITICAL BLOCKER:** x402-list harvester not picking up settlements. 46 transactions on Base but x402-list shows 0 volume. Need to verify:
-- Settlement proof format (X-Payment header)
-- Facilitator settlement configuration
-- x402-list harvester window (Base network coverage)
+**Two numbers exist and they measure different windows — report both, do not pick one:**
+| Source | What it measures | Value as of 2026-10-07 |
+|---|---|---|
+| Our own `/api/revenue_status` | Calls settled since the last container rebuild (today) | 1 call, $0.05, last payment 19:40 UTC |
+| x402-list.com directory (on-chain facilitator measurement, independent of our server) | All settlements since first listing | 13 tx, $1.00 all-time, 2 unique buyers (30d), last settlement Oct 5 03:42 UTC (harvester hasn't yet picked up today's $0.05 call) |
 
-**ACTION:** Contact x402-list team + Coinbase Bazaar team for settlement verification.
+Both are real, neither is wrong — our own counter reset on the rebuild; x402-list's number is the durable on-chain-backed one and should be treated as the primary public figure going forward.
+
+**UNRESOLVED — do not claim "real customers" until this is checked:** x402-list reports 2 unique buyers over the last 30 days (top buyer = 60% of volume). Public block explorers (Basescan/Blockscout) require a paid API key to pull the actual payer wallet list from this environment, so I could not independently confirm whether either of those 2 wallets is the team's own test wallet. Whoever holds the team's test wallet key should check it against the payer addresses before any external claim of "external paying customer" is made.
 
 ### 🟡 Performance & Reliability
 - Uptime (24h): 72.73% (LOW - investigate routing)
@@ -83,39 +82,17 @@
 
 ## Troubleshooting
 
-### Signal Endpoints Returning 404
-```
-Expected: curl https://signals.brobotapp.com/v1/signal/BTC → HTTP 402
-Actual: curl https://signals.brobotapp.com/v1/signal/BTC → HTTP 404 "Not Found"
-```
+### Signal Endpoints — RESOLVED, was a stale reading
+As of Oct 7, 2026 `curl -i https://signals.brobotapp.com/v1/signal/BTC` returns `HTTP/2 402` with a proper `payment-required` header, as expected. The Oct 5 "404" note in earlier versions of this doc did not reflect current behavior — don't trust it without re-checking live.
 
-**Possible Causes:**
-1. Route configuration missing /v1/signal/:symbol
-2. Routes are /signals/:symbol instead
-3. API restart needed
+### Settlements on x402-list — RESOLVED, was a stale reading
+x402-list IS counting settlements: 13 tx / $1.00 all-time as of today's pull, first settlement 2026-09-27. The "$0 volume" note in earlier versions of this doc was stale. **Our own `/api/revenue_status` separately shows only 1 call/$0.05 because that counter reset on a container rebuild today — this is a different, narrower number from x402-list's on-chain-backed one, not a contradiction.** Report both when asked, never just one.
 
-**Fix:** 
-- [ ] Verify route configuration in API server
-- [ ] Check routing logs
-- [ ] Restart API if needed
-
-### Settlements Not Counted on x402-list
-```
-46 transactions confirmed on Base (0x4DBfdd49b1C57b8fF79E7C98De85cA1f705EE3f2)
-but x402-list shows: volume_usd_30d: $0, first_settlement_at: null
-```
-
-**Possible Causes:**
-1. x402-list harvester only runs periodically (check next harvest window)
-2. Settlement proof format doesn't match x402-list expectations
-3. Facilitator settlement not recognized by x402-list
-4. Base network not in current harvest cycle
-
-**Fix:**
-- [ ] Contact x402-list team (x402-list.com support)
-- [ ] Verify settlement proof format against x402 spec
-- [ ] Check if manual registration needed
-- [ ] Query x402-list API directly: `/api/v1/services?slug=aa-signals`
+**Correct current API paths (the old `/api/services/aa-signals` REST path 404s — deprecated):**
+- `GET https://x402-list.com/api/v1/services/aa-signals` — single service record (verified working 2026-10-07)
+- `GET https://x402-list.com/api/v1/services?q=AA%20Signals` — free-text search, also returns our record
+- `GET https://x402-list.com/api/v1/services/aa-signals/checks` — raw probe history
+- `POST https://x402-list.com/api/v1/submit` — current submission endpoint (JSON body: url, email, service_name, description, website_url, endpoints[], notes)
 
 ---
 
@@ -135,8 +112,9 @@ curl https://signals.brobotapp.com/.well-known/x402 | jq '.resources | length'
 
 ### Settlement Address Check
 ```bash
-# Via Basescan
-curl "https://basescan.org/api?module=account&action=txlist&address=0x4DBfdd49b1C57b8fF79E7C98De85cA1f705EE3f2"
+# Via Basescan (note: the free public endpoint now requires an API key —
+# "deprecated V1 endpoint" / "upgrade your api plan" errors are expected without one)
+curl "https://basescan.org/api?module=account&action=txlist&address=0x9B1b09caD288D90b4A0AcE7cA3f67462c88B6a6d"
 ```
 
 ---
